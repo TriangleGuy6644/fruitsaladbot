@@ -8,15 +8,25 @@ import os
 # Load environment variables
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-#initialize bot
-bot = commands.Bot(command_prefix='$', intents=discord.Intents.all())
 
-# Event: Bot is ready
-@bot.event
-async def on_ready():
-    print("[FruitSalad]: Online!")
+
+import discord
+from discord import app_commands
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = discord.Bot(intents=intents)  
+
+#load cogs from cogs/
+for root, dirs, files in os.walk("./cogs"):
+    for file in files:
+        if file.endswith(".py"):
+            # Convert path to module path: cogs/games/dice.py → cogs.games.dice
+            path = os.path.join(root, file)
+            module = path.replace(os.sep, ".").replace(".py", "")
+            bot.load_extension(module)
 
 
 #run bot
 bot.run(TOKEN)
-
